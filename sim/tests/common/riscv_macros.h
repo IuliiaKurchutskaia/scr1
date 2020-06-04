@@ -176,18 +176,45 @@ _run_test:
 // Pass/Fail Macro
 //-----------------------------------------------------------------------
 
-#define RVTEST_PASS                                                     \
-        fence;                                                          \
-        mv a1, TESTNUM;                                                 \
-        li  a0, 0x0;                                                    \
+#define RVTEST_PASS							\
+        fence;								\
+        la t0, pass_str;						\	
+        li t1, 0xf0000000;						\
+        lb t2, 0(t0);							\
+        sb t2, 0(t1);							\
+        lb t2, 1(t0);							\
+        sb t2, 0(t1);							\
+        lb t2, 2(t0);							\
+        sb t2, 0(t1);							\
+        lb t2, 3(t0);							\
+        sb t2, 0(t1); 							\
+        lb t2, 4(t0);							\
+        sb t2, 0(t1);							\
+        add t0, t0, 0x1;						\
+        mv a1, TESTNUM;						\
+        li a0, 0x0;							\
         ecall
 
 #define TESTNUM x28
-#define RVTEST_FAIL                                                     \
-        fence;                                                          \
-        mv a1, TESTNUM;                                                 \
-        li  a0, 0x1;                                                    \
+#define RVTEST_FAIL							\
+        fence;								\
+        la t0, fail_str;						\
+        li t1, 0xf0000000;						\
+        lb t2, 0(t0);							\
+        sb t2, 0(t1);							\
+        lb t2, 1(t0);							\
+        sb t2, 0(t1);							\
+        lb t2, 2(t0);							\
+        sb t2, 0(t1);							\
+        lb t2, 3(t0);							\
+        sb t2, 0(t1);							\
+        lb t2, 4(t0);							\
+        sb t2, 0(t1);							\
+        add t0, t0, 0x1;						\
+        mv a1, TESTNUM;						\
+        li a0, 0x1;							\
         ecall
+
 
 //-----------------------------------------------------------------------
 // Data Section Macro
@@ -809,11 +836,10 @@ pass: \
         RVTEST_PASS \
 
 
-#-----------------------------------------------------------------------
-# Test data section
-#-----------------------------------------------------------------------
-
 #define TEST_DATA
+pass_str:             		\
+        .string "pass\n";	\
+fail_str:             		\
+        .string "fail\n";  	\
 
 #endif
-
